@@ -1,0 +1,61 @@
+{
+  "total_samples": 6670,
+  "price_stats": {
+    "min": 50000.0,
+    "max": 10000000.0,
+    "mean": 529641.6688155922,
+    "median": 420000.0
+  },
+  "year_range": [
+    1994,
+    2020
+  ],
+  "brands": [
+    "maruti",
+    "skoda",
+    "honda",
+    "hyundai",
+    "toyota",
+    "ford",
+    "renault",
+    "mahindra",
+    "tata",
+    "chevrolet",
+    "datsun",
+    "jeep",
+    "mercedes-benz",
+    "mitsubishi",
+    "audi",
+    "volkswagen",
+    "bmw",
+    "nissan",
+    "lexus",
+    "jaguar",
+    "land",
+    "mg",
+    "volvo",
+    "daewoo",
+    "kia",
+    "fiat",
+    "force",
+    "ambassador",
+    "ashok",
+    "isuzu",
+    "opel"
+  ],
+  "fuel_types": [
+    "Diesel",
+    "Petrol",
+    "LPG",
+    "CNG"
+  ],
+  "transmissions": [
+    "Manual",
+    "Automatic"
+  ],
+  "seller_types": [
+    "Individual",
+    "Dealer",
+    "Trustmark Dealer"
+  ]
+}

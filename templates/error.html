@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>❌ Error</h1>
+            <a href="/" class="back-btn">← Back to Prediction</a>
+        </header>
+
+        <div class="error-card">
+            <h2>Something went wrong!</h2>
+            <div class="error-message">
+                <p><strong>Error Details:</strong> {{ error }}</p>
+            </div>
+            <div class="suggestions">
+                <h3>What you can do:</h3>
+                <ul>
+                    <li>Check if all fields are filled correctly</li>
+                    <li>Ensure numeric values are valid</li>
+                    <li>Try again with different values</li>
+                    <li>Contact support if problem persists</li>
+                </ul>
+            </div>
+            <div class="actions">
+                <a href="/" class="btn">Try Again</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

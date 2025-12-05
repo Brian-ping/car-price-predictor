@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Price Prediction - Kenyan Market</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 35px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 1.1em;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .form-container {
+            padding: 40px;
+            background: #0f172a;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        input:invalid {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #1e293b;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #1e293b;
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-size: 15px;
+            color: #f1f5f9;
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto 0;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn.loading {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .submit-btn:hover:not(.loading) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        .submit-btn:hover:not(.loading)::before {
+            left: 100%;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            text-align: center;
+            width: fit-content;
+            border: 1px solid #475569;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #5a6b82 0%, #405366 100%);
+        }
+
+        .model-status {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .feature-info {
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #e2e8f0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid #475569;
+        }
+
+        h3 {
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .image-option {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid #8b5cf6;
+        }
+
+        .image-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .image-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* New Styles */
+        .input-hint {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .price-indicator {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            display: none;
+        }
+
+        .validation-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .button-container {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Car Price Prediction</h1>
+            <p>Kenyan Market • Get Accurate Price Estimates</p>
+        </div>
+
+        <div class="form-container">
+            {% if not model_loaded %}
+            <div class="model-status" style="background: linear-gradient(135deg, #FFA726, #FF9800);">
+                ⚠️ Using Rule-Based Prediction (ML Model Not Available)
+            </div>
+            {% else %}
+            <div class="model-status">
+                ✅ ML Model Loaded Successfully
+            </div>
+            {% endif %}
+
+            <!-- Price Indicator -->
+            <div class="price-indicator" id="priceIndicator">
+                Estimated Price Range: <span id="priceRange">KES 0 - 0</span>
+            </div>
+
+            <form action="/predict" method="post" id="predictionForm">
+                <!-- Basic Information -->
+                <div class="form-group">
+                    <h3>Vehicle Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="manufacturer">Car Brand *</label>
+                            <select id="manufacturer" name="manufacturer" required aria-label="Select car brand">
+                                <option value="">Select Brand</option>
+                                <option value="toyota" selected>Toyota</option>
+                                <option value="nissan">Nissan</option>
+                                <option value="subaru">Subaru</option>
+                                <option value="mitsubishi">Mitsubishi</option>
+                                <option value="honda">Honda</option>
+                                <option value="mazda">Mazda</option>
+                                <option value="ford">Ford</option>
+                                <option value="mercedes-benz">Mercedes-Benz</option>
+                                <option value="bmw">BMW</option>
+                                <option value="audi">Audi</option>
+                                <option value="volkswagen">Volkswagen</option>
+                                <option value="isuzu">Isuzu</option>
+                            </select>
+                            <span class="input-hint">Popular brands in Kenya: Toyota, Nissan, Subaru</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="model">Car Model *</label>
+                            <input type="text" id="model" name="model" 
+                                   placeholder="e.g., Corolla, Hilux, Premio" 
+                                   required 
+                                   value="Corolla"
+                                   pattern="[A-Za-z0-9\s]+"
+                                   title="Only letters, numbers and spaces allowed"
+                                   aria-label="Enter car model">
+                            <span class="input-hint">Enter specific model name (e.g., Corolla AXIO, Hilux Double Cab)</span>
+                            <div class="validation-error" id="modelError">Please enter a valid model name</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Specifications -->
+                <div class="form-group">
+                    <h3>Specifications</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year">Year of Manufacture *</label>
+                            <input type="number" id="year" name="year" 
+                                   min="1990" max="2024" 
+                                   required value="2018"
+                                   aria-label="Enter year of manufacture">
+                            <span class="input-hint">Minimum: 1990, Maximum: Current year</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="odometer_km">Mileage (KM) *</label>
+                            <input type="number" id="odometer_km" name="odometer_km" 
+                                   min="0" max="500000" step="1000" 
+                                   required value="50000"
+                                   aria-label="Enter mileage in kilometers">
+                            <span class="input-hint">Average Kenyan car: 10,000-20,000 KM/year</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="condition">Vehicle Condition *</label>
+                            <select id="condition" name="condition" required aria-label="Select vehicle condition">
+                                <option value="excellent" selected>Excellent</option>
+                                <option value="good">Good</option>
+                                <option value="fair">Fair</option>
+                                <option value="poor">Poor</option>
+                                <option value="salvage">Salvage</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fuel">Fuel Type *</label>
+                            <select id="fuel" name="fuel" required aria-label="Select fuel type">
+                                <option value="gas" selected>Petrol</option>
+                                <option value="diesel">Diesel</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="electric">Electric</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="transmission">Transmission *</label>
+                            <select id="transmission" name="transmission" required aria-label="Select transmission type">
+                                <option value="automatic" selected>Automatic</option>
+                                <option value="manual">Manual</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="type">Vehicle Type *</label>
+                            <select id="type" name="type" required aria-label="Select vehicle type">
+                                <option value="sedan" selected>Sedan</option>
+                                <option value="suv">SUV</option>
+                                <option value="truck">Truck</option>
+                                <option value="pickup">Pickup</option>
+                                <option value="hatchback">Hatchback</option>
+                                <option value="coupe">Coupe</option>
+                                <option value="convertible">Convertible</option>
+                                <option value="wagon">Wagon</option>
+                                <option value="minivan">Minivan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="drive">Drive Type *</label>
+                            <select id="drive" name="drive" required aria-label="Select drive type">
+                                <option value="fwd" selected>Front Wheel Drive (FWD)</option>
+                                <option value="rwd">Rear Wheel Drive (RWD)</option>
+                                <option value="awd">All Wheel Drive (AWD)</option>
+                                <option value="4wd">4 Wheel Drive (4WD)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cylinders">Engine Size (Cylinders) *</label>
+                            <select id="cylinders" name="cylinders" required aria-label="Select engine cylinders">
+                                <option value="4" selected>4 Cylinders</option>
+                                <option value="6">6 Cylinders</option>
+                                <option value="8">8 Cylinders</option>
+                                <option value="10">10 Cylinders</option>
+                                <option value="12">12 Cylinders</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Generation Option -->
+                <div class="form-group">
+                    <h3>Additional Options</h3>
+                    <div class="image-option">
+                        <label for="generate_image">
+                            <input type="checkbox" id="generate_image" name="generate_image" value="true">
+                            <span>🎨 Generate car image using AI (Uses API)</span>
+                        </label>
+                        <p style="color: #cbd5e1; font-size: 13px; margin-top: 8px; margin-left: 30px;">
+                            Check this to generate an AI image of the car based on your specifications
+                        </p>
+                    </div>
+                    
+                    <div class="image-option" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <label for="search_images">
+                            <input type="checkbox" id="search_images" name="search_images" value="true" checked>
+                            <span>🔍 Search for real car images (Online)</span>
+                        </label>
+                        <p style="color: #cbd5e1; font-size: 13px; margin-top: 8px; margin-left: 30px;">
+                            Searches online for actual images of the specified car
+                        </p>
+                    </div>
+                </div>
+
+                <div class="button-container">
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        🚀 Predict Car Price
+                    </button>
+                    
+                    <a href="/" class="home-btn">
+                        🏠 Back to Home
+                    </a>
+                </div>
+            </form>
+
+            <div class="feature-info">
+                <strong>📊 Available Features:</strong><br>
+                • Make/Brand • Model • Year • Mileage • Condition • Fuel Type • Transmission • Engine Size • Drive Type • Vehicle Type<br><br>
+                <strong>🖼️ Image Generation:</strong><br>
+                • AI Image Generation using Stable Diffusion/DALL-E API<br>
+                • Real Image Search from online sources<br><br>
+                <strong>💰 Price Estimation:</strong><br>
+                • Based on Kenyan market data<br>
+                • Factors: Age, Mileage, Condition, Brand popularity
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            const yearInput = document.getElementById('year');
+            const currentYear = new Date().getFullYear();
+            const form = document.getElementById('predictionForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const priceIndicator = document.getElementById('priceIndicator');
+            const priceRange = document.getElementById('priceRange');
+            const modelInput = document.getElementById('model');
+            const modelError = document.getElementById('modelError');
+            
+            // Set max year to current year
+            yearInput.max = currentYear;
+            
+            // Update car age display
+            function updateCarAge() {
+                const year = parseInt(yearInput.value);
+                if (year && year <= currentYear) {
+                    const age = currentYear - year;
+                    // You can display this somewhere if needed
+                    console.log('Car age:', age);
+                }
+            }
+            
+            // Estimate price based on inputs
+            function estimatePrice() {
+                const year = parseInt(yearInput.value) || 2018;
+                const mileage = parseInt(document.getElementById('odometer_km').value) || 50000;
+                const condition = document.getElementById('condition').value;
+                const manufacturer = document.getElementById('manufacturer').value;
+                
+                if (!manufacturer || !year) return;
+                
+                // Simple price estimation algorithm (replace with actual ML model)
+                let basePrice = 0;
+                
+                // Base price based on brand
+                const brandPrices = {
+                    'toyota': 1500000,
+                    'nissan': 1300000,
+                    'subaru': 1400000,
+                    'mitsubishi': 1200000,
+                    'honda': 1300000,
+                    'mazda': 1100000,
+                    'ford': 1200000,
+                    'mercedes-benz': 3000000,
+                    'bmw': 2500000,
+                    'audi': 2200000,
+                    'volkswagen': 1300000,
+                    'isuzu': 1600000
+                };
+                
+                basePrice = brandPrices[manufacturer] || 1000000;
+                
+                // Adjust for year (5% increase per year from 2000)
+                const yearMultiplier = Math.pow(1.05, year - 2000);
+                basePrice *= yearMultiplier;
+                
+                // Adjust for mileage (0.5% reduction per 10,000 KM)
+                const mileageDeduction = (mileage / 10000) * 0.005;
+                basePrice *= (1 - mileageDeduction);
+                
+                // Adjust for condition
+                const conditionMultipliers = {
+                    'excellent': 1.0,
+                    'good': 0.85,
+                    'fair': 0.7,
+                    'poor': 0.5,
+                    'salvage': 0.3
+                };
+                
+                basePrice *= conditionMultipliers[condition] || 0.7;
+                
+                // Add ±20% range
+                const minPrice = Math.round(basePrice * 0.8);
+                const maxPrice = Math.round(basePrice * 1.2);
+                
+                // Format with KES
+                const formatKES = (amount) => {
+                    return 'KES ' + amount.toLocaleString('en-KE');
+                };
+                
+                priceRange.textContent = `${formatKES(minPrice)} - ${formatKES(maxPrice)}`;
+                priceIndicator.style.display = 'block';
+            }
+            
+            // Validate model input
+            function validateModel() {
+                const modelValue = modelInput.value.trim();
+                const isValid = /^[A-Za-z0-9\s]+$/.test(modelValue) && modelValue.length >= 2;
+                
+                if (!isValid && modelValue !== '') {
+                    modelError.style.display = 'block';
+                    modelInput.style.borderColor = '#ef4444';
+                } else {
+                    modelError.style.display = 'none';
+                    modelInput.style.borderColor = '#334155';
+                }
+                
+                return isValid;
+            }
+            
+            // Form submission handler
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!validateModel()) {
+                    modelError.style.display = 'block';
+                    modelInput.focus();
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.classList.add('loading');
+                submitBtn.innerHTML = '⏳ Processing...';
+                
+                const manufacturer = document.getElementById('manufacturer').value;
+                const model = document.getElementById('model').value;
+                const year = document.getElementById('year').value;
+                const condition = document.getElementById('condition').value;
+                const fuel = document.getElementById('fuel').value;
+                const transmission = document.getElementById('transmission').value;
+                const vehicleType = document.getElementById('type').value;
+                const drive = document.getElementById('drive').value;
+                const cylinders = document.getElementById('cylinders').value;
+                const generateImage = document.getElementById('generate_image').checked;
+                const searchImages = document.getElementById('search_images').checked;
+                
+                // Create search query for image API
+                if (generateImage || searchImages) {
+                    const carQuery = `${year} ${manufacturer} ${model} ${vehicleType}`;
+                    console.log('Image search query:', carQuery);
+                    
+                    // Add hidden field for image query (optional)
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'image_query';
+                    hiddenInput.value = carQuery;
+                    form.appendChild(hiddenInput);
+                }
+
+                // Log all data for debugging
+                console.log('Form Data:', {
+                    manufacturer, model, year, condition,
+                    fuel, transmission, vehicleType, drive, cylinders
+                });
+                
+                // Simulate API call delay (remove in production)
+                setTimeout(() => {
+                    form.submit();
+                }, 500);
+            });
+            
+            // Add event listeners for real-time price estimation
+            const priceInputs = ['manufacturer', 'year', 'odometer_km', 'condition'];
+            priceInputs.forEach(inputId => {
+                document.getElementById(inputId).addEventListener('change', estimatePrice);
+                document.getElementById(inputId).addEventListener('input', estimatePrice);
+            });
+            
+            // Model validation on input
+            modelInput.addEventListener('input', function() {
+                validateModel();
+                // Only estimate price if model is valid
+                if (validateModel()) {
+                    estimatePrice();
+                }
+            });
+            
+            // Initialize
+            updateCarAge();
+            validateModel();
+            estimatePrice(); // Show initial estimate
+            
+            // Set better defaults for Kenyan market
+            yearInput.value = Math.max(2018, currentYear - 3);
+            document.getElementById('odometer_km').value = 80000; // More realistic for Kenya
+        });
+    </script>
+</body>
+</html>
