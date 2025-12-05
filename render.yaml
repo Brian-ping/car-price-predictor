@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: car-price-predictor
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    pythonVersion: 3.9.0
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: EXCHANGE_RATE
+        value: 130.0
+      - key: DEBUG
+        value: false
